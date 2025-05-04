@@ -24,16 +24,16 @@ class VehicleModelPublic:
         # 1. Load the dynamic library
         self._lib = ctypes.CDLL(lib_path)
 
-        # 2. Define the input structure (corresponding to ExtU_vehiclemodel_public_T in C)
-        class ExtU_vehiclemodel_public_T(ctypes.Structure):
+        # 2. Define the input structure (corresponding to ExtU_vehiclemodel_public_0326_T in C)
+        class ExtU_vehiclemodel_public_0326_T(ctypes.Structure):
             _fields_ = [
-                ("sped", ctypes.c_double),
-                ("delta", ctypes.c_double),
+                ("delta_f", ctypes.c_double),
                 ("V_ini", ctypes.c_double),
+                ("delta_r", ctypes.c_double),
             ]
 
-        # 3. Define the output structure (corresponding to ExtY_vehiclemodel_public_T in C)
-        class ExtY_vehiclemodel_public_T(ctypes.Structure):
+        # 3. Define the output structure (corresponding to ExtY_vehiclemodel_public_0326_T in C)
+        class ExtY_vehiclemodel_public_0326_T(ctypes.Structure):
             _fields_ = [
                 ("X", ctypes.c_double),
                 ("Y", ctypes.c_double),
@@ -44,13 +44,13 @@ class VehicleModelPublic:
             ]
 
         # 4. Bind to global variables in the library (vehiclemodel_public_U / vehiclemodel_public_Y)
-        self._input_struct = ExtU_vehiclemodel_public_T.in_dll(self._lib, "vehiclemodel_public_U")
-        self._output_struct = ExtY_vehiclemodel_public_T.in_dll(self._lib, "vehiclemodel_public_Y")
+        self._input_struct = ExtU_vehiclemodel_public_0326_T.in_dll(self._lib, "vehiclemodel_public_0326_U")
+        self._output_struct = ExtY_vehiclemodel_public_0326_T.in_dll(self._lib, "vehiclemodel_public_0326_Y")
 
         # 5. Declare the return types for library functions
-        self._lib.vehiclemodel_public_initialize.restype = None
-        self._lib.vehiclemodel_public_step.restype = None
-        self._lib.vehiclemodel_public_terminate.restype = None
+        self._lib.vehiclemodel_public_0326_initialize.restype = None
+        self._lib.vehiclemodel_public_0326_step.restype = None
+        self._lib.vehiclemodel_public_0326_terminate.restype = None
 
         # Optional: Define storage for the previous simulation output if needed
         self.last_output = None
@@ -58,10 +58,10 @@ class VehicleModelPublic:
         # Mark whether initialization is complete
         self._initialized = False
 
-    def initial(self, sped: float, delta: float, v_ini: float):
+    def initial(self, delta_f: float, V_ini: float, delta_r: float):
         """
-        Initialize the model: call vehiclemodel_public_initialize,
-        and set the initial input values (sped, delta, V_ini).
+        Initialize the model: call vehiclemodel_public_0326_initialize,
+        and set the initial input values (delta_f, V_ini, delta_r).
 
         sped: Represents throttle/brake input. When positive, it indicates throttle depth;
               when negative, it indicates brake depth. Recommended range: [-1, 1], but values
@@ -69,24 +69,24 @@ class VehicleModelPublic:
         delta: Represents the front wheel steering angle, in radians.
         """
         # Call the initialization function in the C library
-        self._lib.vehiclemodel_public_initialize()
+        self._lib.vehiclemodel_public_0326_initialize()
         self._initialized = True
 
         # Set the input values
-        self._input_struct.sped = sped
-        self._input_struct.delta = delta
-        self._input_struct.V_ini = v_ini
+        self._input_struct.delta_f = delta_f
+        self._input_struct.V_ini = V_ini
+        self._input_struct.delta_r = delta_r
 
         # Optionally call step() to immediately advance the simulation
         # Note: In RL scenarios, initial observation might be required before stepping
-        self._lib.vehiclemodel_public_step()  # Optional: advance the simulation by one step
+        self._lib.vehiclemodel_public_0326_step()  # Optional: advance the simulation by one step
         obs = self._get_current_observation()
         return obs  # Return the initial observation (optional)
 
-    def step(self, sped: float, delta: float):
+    def step(self, delta_f: float, delta_r: float):
         """
-        Update the input: sped, delta,
-        call vehiclemodel_public_step(),
+        Update the input: delta_f, delta_r,
+        call vehiclemodel_public_0326_step(),
         and return the new state information (X, Y, yaw, Vx, Vy, r).
 
         Note:
@@ -100,12 +100,12 @@ class VehicleModelPublic:
             raise RuntimeError("Please call initial() to complete initialization first.")
 
         # 1. Update the input values (e.g., RL actions mapped to sped and delta)
-        self._input_struct.sped = sped
-        self._input_struct.delta = delta
+        self._input_struct.delta_f = delta_f
+        self._input_struct.delta_r = delta_r
         # V_ini is usually set only during initialization; modify here if necessary.
 
         # 2. Call the step function
-        self._lib.vehiclemodel_public_step()
+        self._lib.vehiclemodel_public_0326_step()
 
         # 3. Read and return the output
         obs = self._get_current_observation()
@@ -116,7 +116,7 @@ class VehicleModelPublic:
         Terminate the model by calling vehiclemodel_public_terminate()
         """
         if self._initialized:
-            self._lib.vehiclemodel_public_terminate()
+            self._lib.vehiclemodel_public_0326_terminate()
             self._initialized = False
 
     def _get_current_observation(self):
