@@ -1,7 +1,7 @@
 # rl_td3_fast_spawn.py  —— 多进程 (spawn) + checkpoint + 轨迹
 # =============================================================
 import multiprocessing as mp
-mp.set_start_method("spawn", force=True)        # ★ 关键！Windows 多进程安全
+mp.set_start_method("spawn", force=True)        # Windows 多进程安全
 
 import os, math, pathlib, numpy as np, matplotlib
 matplotlib.use("Agg")
