@@ -69,4 +69,7 @@ steering_curves.png    # Front/rear steering angle + beta curve
 traj_final.png         # X-Y trajectory
 ```
 
-
+### 5 Select best trained model
+```bash
+python sort.py
+```
