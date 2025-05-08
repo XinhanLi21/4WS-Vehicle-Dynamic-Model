@@ -129,7 +129,7 @@ def make_env(rank, path, dll, seed=0):
 
 # =========================== main =============================
 if __name__ == "__main__":
-    DLL  = r"D:\OneDriveTemp\OneDrive\Desktop\5.4\vehiclemodel_public_0326_win64.dll"
+    DLL = str(pathlib.Path(__file__).parent / "vehiclemodel_public_0326_win64.dll")
     PATH = np.asarray(loadmat("path5_mpc4ws.mat")["path5"], float)
 
     n_envs = 8                     # 可按 CPU 调整

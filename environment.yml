@@ -1,0 +1,18 @@
+name: 4ws_rl
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12.3
+  - numpy=2.2.4
+  - scipy
+  - matplotlib
+  - gymnasium=1.1.1
+  - cloudpickle=3.1.1
+  - tqdm
+  - rich
+  - pip
+  - pip:
+      - stable-baselines3==2.6.0
+      - torch==2.5.1+cu124
